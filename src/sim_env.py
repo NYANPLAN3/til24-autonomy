@@ -1,6 +1,7 @@
-from asyncio import sleep
-from environment import Environment
 import json
+from asyncio import sleep
+
+from environment import Environment
 
 
 class SimEnv(Environment):
