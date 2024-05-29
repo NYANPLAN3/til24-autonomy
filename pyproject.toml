@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "py-api-template"
+name = "til24-autonomy"
 version = "0.1.0"
 description = "template for python api server"
 authors = ["Your Name <you@example.com>"]
@@ -7,12 +7,14 @@ readme = "README.md"
 packages = [{ include = "src" }]
 
 [tool.poetry.dependencies]
-python = "<3.13,>=3.8"
+python = ">=3.8,<3.9"
 python-dotenv = "^1.0.1"
 fastapi-slim = "^0.111.0"
 uvicorn = "^0.29.0"
 uvloop = "^0.19.0"
 httptools = "^0.6.1"
+websockets = "^12.0"
+robomaster = "^0.1.1.68"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.4.6"
@@ -29,15 +31,15 @@ ipywidgets = "*"
 
 [tool.poe.tasks]
 dev = { cmd = "python dev.py", use_exec = true }
-prod = "docker run --rm --gpus all -p 3000:3000 py-api-template:latest"
+prod = "docker run --rm --gpus all -p 5003:5003 til24-autonomy:latest"
 test = "echo Not Implemented Yet!"
 publish = "echo Not Implemented Yet!"
 requirements = "poetry export -o requirements.txt --without-hashes"
 
 [tool.poe.tasks.build]
 cmd = """docker build -f Dockerfile . \
-  -t py-api-template:latest \
-  -t py-api-template:${tag} \
+  -t til24-autonomy:latest \
+  -t til24-autonomy:${tag} \
 """
 deps = ["requirements"]
 args = [{ name = "tag", positional = true, required = true }]

@@ -34,7 +34,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "dev:create_debug_app",
         host="localhost",
-        port=3000,
+        port=5003,
         log_level=logging.INFO,
         reload=True,
         factory=True,
