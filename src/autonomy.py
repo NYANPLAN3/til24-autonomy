@@ -9,11 +9,11 @@ import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request, Response
-from robot_env import RobotEnv
-from sim_env import SimEnv
 
 from .environment import Environment
 from .log import setup_logging
+from .robot_env import RobotEnv
+from .sim_env import SimEnv
 
 env: Environment | None = None
 TEAM_NAME = os.getenv("TEAM_NAME", "Team Name")

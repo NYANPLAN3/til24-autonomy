@@ -2,9 +2,10 @@ import asyncio
 import json
 import logging
 
-from environment import Environment
 from robomaster import config
 from robomaster.robot import Robot
+
+from .environment import Environment
 
 log = logging.getLogger(__name__)
 

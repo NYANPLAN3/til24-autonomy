@@ -2,7 +2,7 @@ import json
 import logging
 from asyncio import sleep
 
-from environment import Environment
+from .environment import Environment
 
 log = logging.getLogger(__name__)
 
