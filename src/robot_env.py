@@ -1,9 +1,12 @@
 import asyncio
 import json
+import logging
 
 from environment import Environment
 from robomaster import config
 from robomaster.robot import Robot
+
+log = logging.getLogger(__name__)
 
 
 class RobotEnv(Environment):
@@ -35,7 +38,7 @@ class RobotEnv(Environment):
         def sub_data_handler(angle_info):
             _, self.camera_yaw, _, _ = angle_info
 
-            print(f"yaw: {self.camera_yaw}")
+            log.info(f"yaw: {self.camera_yaw}")
             # responsible for updating the server
             self.loop.create_task(
                 self.send_websocket(

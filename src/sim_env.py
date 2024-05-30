@@ -1,7 +1,10 @@
 import json
+import logging
 from asyncio import sleep
 
 from environment import Environment
+
+log = logging.getLogger(__name__)
 
 
 class SimEnv(Environment):
@@ -18,7 +21,7 @@ class SimEnv(Environment):
         self.camera_yaw = 0
 
     async def update_sim(self) -> None:
-        print("sending data")
+        log.info("sending data")
         await self.send_websocket(
             json.dumps({"type": "update", "yaw": self.camera_yaw})
         )

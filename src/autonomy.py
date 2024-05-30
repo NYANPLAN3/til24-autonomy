@@ -1,12 +1,19 @@
 from __future__ import annotations
 
+import dotenv
+
+dotenv.load_dotenv()
+
+import logging
 import os
 from contextlib import asynccontextmanager
 
-from environment import Environment
 from fastapi import FastAPI, HTTPException, Request, Response
 from robot_env import RobotEnv
 from sim_env import SimEnv
+
+from .environment import Environment
+from .log import setup_logging
 
 env: Environment | None = None
 TEAM_NAME = os.getenv("TEAM_NAME", "Team Name")
@@ -16,16 +23,19 @@ ROBOT_IP = os.getenv("ROBOT_IP", "192.168.10.10")
 ROBOT_SN = os.getenv("ROBOT_SN", "ABC123")
 USE_ROBOT = os.getenv("USE_ROBOT", "false").lower() in ["true", "1", "t", "y", "yes"]
 
+setup_logging()
+log = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global env
     # initialize websocket with competition server
     if USE_ROBOT:
-        print("using robot")
+        log.info("using robot")
         assert ROBOT_IP, "No robot IP provided"
         assert ROBOT_SN, "No robot serial number provided"
-        print(
+        log.info(
             f"robot ip: {ROBOT_IP}; robot sn: {ROBOT_SN}; team name: {TEAM_NAME}; server: {SERVER_IP}:{SERVER_PORT}"
         )
         env = RobotEnv(
@@ -35,7 +45,7 @@ async def lifespan(app: FastAPI):
             local_ip="0.0.0.0",
         )
     else:
-        print(f"using sim env for server {SERVER_IP}:{SERVER_PORT}")
+        log.info(f"using sim env for server {SERVER_IP}:{SERVER_PORT}")
         env = SimEnv(f"ws://{SERVER_IP}:{SERVER_PORT}/ws_auto/{TEAM_NAME}")
     await env._init_websocket()
     yield
@@ -63,7 +73,7 @@ async def send_heading(request: Request):
     request_dict = await request.json()
 
     heading = request_dict["heading"]
-    print(heading)
+    log.info(heading)
     # TODO: fill in here
     # depends on how your team would like to implement the robotics component
     heading = int(heading)
@@ -71,7 +81,7 @@ async def send_heading(request: Request):
         heading -= 360
     # rotate to heading
     await env.pan_cannon(heading)
-    print("taking snapshot")
+    log.info("taking snapshot")
     b_image: bytes = await env.take_snapshot()
     return Response(content=b_image, media_type="image/jpeg")
 

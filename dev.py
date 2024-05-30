@@ -21,9 +21,9 @@ def create_debug_app():
     )
     logging.getLogger("src").setLevel(logging.DEBUG)
 
-    from src import create_app
+    from src.autonomy import app
 
-    return create_app()
+    return app
 
 
 if __name__ == "__main__":

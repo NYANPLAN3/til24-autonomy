@@ -1,8 +1,11 @@
+import logging
 from abc import ABC, abstractmethod
 from typing import Any, Tuple
 from urllib.parse import quote
 
 import websockets
+
+log = logging.getLogger(__name__)
 
 
 class Environment(ABC):
@@ -18,7 +21,7 @@ class Environment(ABC):
         self.camera_yaw_min = -180  # in degrees (actual min controllable yaw is -250)
 
     async def _init_websocket(self) -> None:
-        print(self.uri)
+        log.info(self.uri)
         self.websocket = await websockets.connect(self.uri, max_size=2**24)
 
     def health(self) -> bool:
