@@ -31,15 +31,18 @@ ipywidgets = "*"
 
 [tool.poe.tasks]
 dev = { cmd = "python dev.py", use_exec = true }
-prod = "docker run --rm --gpus all -p 5003:5003 til24-autonomy:latest"
-test = "echo Not Implemented Yet!"
-publish = "echo Not Implemented Yet!"
+prod = "docker run --rm --gpus all -p 5003:5003 nyanplan3-autonomy:latest"
+test = "echo You cant test this without main...?"
+publish = "docker push -a asia-southeast1-docker.pkg.dev/dsta-angelhack/repository-nyanplan3/nyanplan3-autonomy"
 requirements = "poetry export -o requirements.txt --without-hashes"
 
 [tool.poe.tasks.build]
 cmd = """docker build -f Dockerfile . \
-  -t til24-autonomy:latest \
-  -t til24-autonomy:${tag} \
+  -t nyanplan3-autonomy:latest \
+  -t asia-southeast1-docker.pkg.dev/dsta-angelhack/repository-nyanplan3/nyanplan3-autonomy:latest \
+  -t asia-southeast1-docker.pkg.dev/dsta-angelhack/repository-nyanplan3/nyanplan3-autonomy:finals \
+  -t nyanplan3-autonomy:${tag} \
+  -t asia-southeast1-docker.pkg.dev/dsta-angelhack/repository-nyanplan3/nyanplan3-autonomy:${tag} \
 """
 deps = ["requirements"]
 args = [{ name = "tag", positional = true, required = true }]
