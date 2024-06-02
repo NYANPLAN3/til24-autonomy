@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 class Environment(ABC):
-    ## initialize websocket
+    # initialize websocket
     @abstractmethod
     def __init__(self, uri: str) -> None:
         self.uri = quote(uri, safe="/:")
@@ -17,8 +17,10 @@ class Environment(ABC):
 
     def _init_params(self) -> None:
         # define camera movement limits
-        self.camera_yaw_max = 180  # in degrees (actual max controllable yaw is +250)
-        self.camera_yaw_min = -180  # in degrees (actual min controllable yaw is -250)
+        # in degrees (actual max controllable yaw is +250)
+        self.camera_yaw_max = 180
+        # in degrees (actual min controllable yaw is -250)
+        self.camera_yaw_min = -180
 
     async def _init_websocket(self) -> None:
         log.info(self.uri)
@@ -29,6 +31,7 @@ class Environment(ABC):
 
     async def _close_websocket(self) -> None:
         await self.websocket.close()
+        self.websocket = None
 
     async def send_websocket(self, data: str) -> None:
         await self.websocket.send(data)

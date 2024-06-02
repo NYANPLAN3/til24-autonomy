@@ -22,6 +22,9 @@ SERVER_PORT = os.getenv("COMPETITION_SERVER_PORT", "8000")
 ROBOT_IP = os.getenv("ROBOT_IP", "192.168.10.10")
 ROBOT_SN = os.getenv("ROBOT_SN", "ABC123")
 USE_ROBOT = os.getenv("USE_ROBOT", "false").lower() in ["true", "1", "t", "y", "yes"]
+# https://robomaster-dev.readthedocs.io/en/latest/python_sdk/robomaster.html#robomaster.gimbal.Gimbal.moveto
+# TODO: Use env var on irl session to test the maximum speed
+YAW_SPEED = int(os.getenv("YAW_SPEED", 60))
 
 setup_logging()
 log = logging.getLogger(__name__)
@@ -74,7 +77,6 @@ async def send_heading(request: Request):
 
     heading = request_dict["heading"]
     log.info(heading)
-    # TODO: fill in here
     # depends on how your team would like to implement the robotics component
     heading = int(heading)
     if heading > 180:
@@ -89,6 +91,5 @@ async def send_heading(request: Request):
 # optional, depends on how your team would like to implement the robotics component
 @app.post("/reset_cannon")
 async def reset_cannon():
-    # TODO: fill in here
     await env.reset_pan_cannon()
     return {"message": "done"}
