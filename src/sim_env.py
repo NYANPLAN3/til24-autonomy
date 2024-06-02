@@ -21,7 +21,7 @@ class SimEnv(Environment):
         self.camera_yaw = 0
 
     async def update_sim(self) -> None:
-        log.info("sending data")
+        # log.info("sending data")
         await self.send_websocket(
             json.dumps({"type": "update", "yaw": self.camera_yaw})
         )
