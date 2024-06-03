@@ -30,4 +30,4 @@ COPY --link src ./src
 
 EXPOSE 5003
 # uvicorn --host=0.0.0.0 --port=5003 src.autonomy:app
-CMD ["uvicorn", "--host=0.0.0.0", "--port=5003", "src.autonomy:app"]
+CMD ["uvicorn", "--log-level=warning", "--host=0.0.0.0", "--port=5003", "src.autonomy:app"]

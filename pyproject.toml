@@ -15,6 +15,7 @@ uvloop = "^0.19.0"
 httptools = "^0.6.1"
 websockets = "^12.0"
 robomaster = "^0.1.1.68"
+colorlog = "^6.8.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.4.6"
@@ -31,7 +32,7 @@ ipywidgets = "*"
 
 [tool.poe.tasks]
 dev = { cmd = "python dev.py", use_exec = true }
-prod = { cmd = "docker run --rm -it -p 5003:5003 nyanplan3-autonomy:latest", use_exec = true }
+prod = { cmd = "docker run --rm -it --env-file ../.env -p 5003:5003 nyanplan3-autonomy:latest", use_exec = true }
 test = "echo You cant test this without main...?"
 publish = "docker push -a asia-southeast1-docker.pkg.dev/dsta-angelhack/repository-nyanplan3/nyanplan3-autonomy"
 requirements = "poetry export -o requirements.txt --without-hashes"

@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
     global env
     # initialize websocket with competition server
     if USE_ROBOT:
-        log.info("using robot")
+        log.info("!!!Real robot mode!!!")
         assert ROBOT_IP, "No robot IP provided"
         assert ROBOT_SN, "No robot serial number provided"
         log.info(
@@ -48,7 +48,7 @@ async def lifespan(app: FastAPI):
             local_ip="0.0.0.0",
         )
     else:
-        log.info(f"using sim env for server {SERVER_IP}:{SERVER_PORT}")
+        log.info(f"using simulator at {SERVER_IP}:{SERVER_PORT}")
         env = SimEnv(f"ws://{SERVER_IP}:{SERVER_PORT}/ws_auto/{TEAM_NAME}")
     await env._init_websocket()
     yield
@@ -76,14 +76,14 @@ async def send_heading(request: Request):
     request_dict = await request.json()
 
     heading = request_dict["heading"]
-    log.info(heading)
     # depends on how your team would like to implement the robotics component
     heading = int(heading)
     if heading > 180:
         heading -= 360
     # rotate to heading
+    log.info(f"Rotating to heading: {request_dict['heading']} ({heading})")
     await env.pan_cannon(heading)
-    log.info("taking snapshot")
+    log.info("Waiting for snapshot...")
     b_image: bytes = await env.take_snapshot()
     return Response(content=b_image, media_type="image/jpeg")
 
@@ -93,3 +93,5 @@ async def send_heading(request: Request):
 async def reset_cannon():
     await env.reset_pan_cannon()
     return {"message": "done"}
+
+log.info("Autonomy App Ready.")
