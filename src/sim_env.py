@@ -3,8 +3,13 @@ import logging
 from asyncio import sleep
 
 from .environment import Environment
+from .envvars import *
 
 log = logging.getLogger(__name__)
+
+
+def _dist_yaw(src, tgt):
+    return ((tgt-src+180) % 360)-180
 
 
 class SimEnv(Environment):
@@ -16,7 +21,7 @@ class SimEnv(Environment):
         super().__init__(uri)
 
         self.update_freq = 20
-        self.velocity = 60 / self.update_freq
+        self.velocity = YAW_SPEED / self.update_freq
         # initialize yaw
         self.camera_yaw = 0
 
@@ -26,33 +31,14 @@ class SimEnv(Environment):
             json.dumps({"type": "update", "yaw": self.camera_yaw})
         )
 
-    ## MOVEMENT CODE
+    # MOVEMENT CODE
     async def pan_cannon(self, change):
         """Pans the cannon in the horizontal direction"""
-        changed = 0
-        while True:
+        while abs(diff := _dist_yaw(self.camera_yaw, change)) > YAW_TOL:
             await sleep(1 / self.update_freq)
-            if changed < change:
-                if changed + self.velocity > change:
-                    diff = change - changed
-                else:
-                    diff = self.velocity
-            else:
-                if changed + self.velocity < change:
-                    diff = change - changed
-                else:
-                    diff = -self.velocity
-
-            # Update yaw here
-            self.camera_yaw += diff
-            changed += diff
-            if self.camera_yaw > 0:
-                self.camera_yaw = min(self.camera_yaw, self.camera_yaw_max)
-            else:
-                self.camera_yaw = max(self.camera_yaw, self.camera_yaw_min)
+            sign = 1 if diff > 0 else -1
+            self.camera_yaw += min(abs(diff), self.velocity) * sign
             await self.update_sim()
-            if changed == change:
-                break
 
     async def reset_pan_cannon(self):
         await self.pan_cannon(-self.camera_yaw)
