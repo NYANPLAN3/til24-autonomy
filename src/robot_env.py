@@ -6,8 +6,13 @@ from robomaster import config
 from robomaster.robot import Robot
 
 from .environment import Environment
+from .envvars import *
 
 log = logging.getLogger(__name__)
+
+
+def _dist_yaw(src, tgt):
+    return ((tgt-src+180) % 360)-180
 
 
 class RobotEnv(Environment):
@@ -15,7 +20,7 @@ class RobotEnv(Environment):
     This class provides the primitive actions to control the actual robomaster
     """
 
-    def __init__(self, uri: str, robot_sn: str, robot_ip: str, local_ip: str, yaw_speed: int) -> None:
+    def __init__(self, uri: str, robot_sn: str, robot_ip: str, local_ip: str) -> None:
         # initialize websocket with competition server
         super().__init__(uri)
 
@@ -25,7 +30,6 @@ class RobotEnv(Environment):
         config.ROBOT_IP_STR = robot_ip
         self.robot = Robot()
         self.loop = asyncio.get_event_loop()
-        self.yaw_speed = yaw_speed
 
         self.robot.initialize(conn_type="sta", sn=robot_sn)
         self.robot.set_robot_mode(mode="free")
@@ -65,7 +69,8 @@ class RobotEnv(Environment):
     # NOTE: we use moveto since that is the robot's guarantee that it will go to that heading.
     async def pan_cannon(self, change) -> None:
         """Pans the cannon in the horizontal direction"""
-        await RobotEnv.wait_for_action(self.robot.gimbal.moveto(yaw=change, yaw_speed=self.yaw_speed))
+        while abs(_dist_yaw(self.camera_yaw, change)) > YAW_TOL:
+            await RobotEnv.wait_for_action(self.robot.gimbal.moveto(yaw=change, yaw_speed=YAW_SPEED))
 
     # NOTE: moveto was used instead of recenter to avoid changing pitch.
     async def reset_pan_cannon(self) -> None:
