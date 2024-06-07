@@ -62,9 +62,8 @@ class RobotEnv(Environment):
         self.robot.gimbal.sub_angle(freq=20, callback=sub_data_handler)
 
     async def wait_for_action(action):
-        await asyncio.to_thread(action.wait_for_completed)
-        # while not action.is_completed:
-        #     await asyncio.sleep(0)
+        while not action.is_completed:
+            await asyncio.sleep(0)
 
     # NOTE: we use moveto since that is the robot's guarantee that it will go to that heading.
     async def pan_cannon(self, change) -> None:

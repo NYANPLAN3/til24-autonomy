@@ -34,7 +34,10 @@ class Environment(ABC):
         self.websocket = None
 
     async def send_websocket(self, data: str) -> None:
-        await self.websocket.send(data)
+        try:
+            await self.websocket.send(data)
+        except Exception as e:
+            log.error(e, exc_info=e)
 
     async def take_snapshot(self) -> Any:
         await self.websocket.send('{"type": "snapshot"}')
